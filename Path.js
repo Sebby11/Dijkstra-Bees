@@ -40,12 +40,61 @@ class Path{
 		return this.pointPath
 	}
 
-	addPoint(x, y){
+	addPoint(x, y, hiveBool){
 		//add to path
 		this.pointPath.push([x, y]);
+		console.log("Neibor: ", this.neighbors)
+
+		//if the hive then the only neighbors are the two closest points
+		if(hiveBool){
+			/*var tmpDistances = [];
+			var tmpCoords = [];
+			var ind, m1, m2;
+			//This iterates through each flower & puts their distances from the hive into a list
+			//Also places their coordinates in a list.
+			for(let neib in this.neighbors){
+				var dist = abs(x - neib[0][0]) + abs(y - neib[0][1])
+				console.log("Distance from hive: ", dist);
+				tmpCoords.push([neib[0][0], neib[0][1], dist]);
+				tmpDistances.push(dist);
+			}
+
+			//Grab first closest flower from the hive
+			m1 = Math.min(tmpDistances)
+			console.log("MAX 1: ", m1)
+
+			//find coordinates of m1 & replace m1 w/ neighbor element
+			for(let x in tmpCoords){
+				if(x[2] == m1){
+					//[[x, y], distance]
+					m1 = [[x[0], x[1]], x[2]];
+					break
+				}
+			}
+
+			//splice first out
+			ind = tmpDistances.indexOf(m1);
+			if(ind > -1)
+				tmpDistances.splice(tmpDistances, ind);
+
+			//grab second closest flower from the hive
+			m2 = Math.min(tmpDistances);
+
+			//find coordinates of m2 & replace m2 w/ neighbor element
+			for(let x in tmpCoords){
+				if(x[2] == m2){
+					//[[x, y], distance]
+					m2 = [[x[0], x[1]], x[2]];
+					break
+				}
+			}
+			this.neighbors.push(m1, m2);
+			console.log("PATH LIST: ", this.pointPath);
+			console.log("NEIGHBORS: ", this.neighbors);*/
+			return;
+		}
 
 		//add to neighbors
-
 		this.neighbors.push([]);
 
 		if(this.pointPath.length > 1){

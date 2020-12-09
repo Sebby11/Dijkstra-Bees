@@ -90,7 +90,7 @@ function draw() {
 		//Boids
 		for(let boid of flock){
 			boid.randOrFollow = whoFollow;
-			boid.flock(flock, path.pointPath);
+			boid.flock(flock, path, path.pointPath, path.neighbors);
 			boid.ifAtEdge();
 			boid.update();
 			if(typeFlock == 'Bee')
@@ -114,7 +114,7 @@ function followPath(){
 	if(path.pointPath.length == 0)
 		return
 	console.log('here')
-	whoFollow = 'path';
+	whoFollow = 'pathInOrder';
 }
 
 function clearAll(){
@@ -133,7 +133,7 @@ function clearAll(){
 function mouseReleased(){
 	if(mouseX > 699 || mouseY > 699)
 		return
-	path.addPoint(mouseX, mouseY);
+	path.addPoint(mouseX, mouseY, false);
 	console.log(path.pointPath.length);
 }
 
@@ -141,7 +141,9 @@ function goBees(){
 	//Check if there is a path at all. If not - do random // If so - do path
 	if(path.pointPath.length > 0){
 		console.log(path.length)
-		whoFollow = 'path';
+		//Hive point (60, 80)
+		path.addPoint(60, 80, true);
+		whoFollow = 'pathInOrder';
 	}
 
 	beesLoose = true;
