@@ -70,6 +70,17 @@ function draw() {
 	slideVal = slider.value();
 	background(0);
 
+	//***Testing for locating something within a radius***
+	strokeWeight(3);
+	stroke(51);
+	fill(255, 0, 0);
+	ellipse(width/2, height/2, 20, 20);
+	ellipse(300, 50, 20, 20);
+	line(25, 0, 25, 700);
+	line(0, 25, 700, 25);
+	line(0, 700 - 25, 700, 700 - 25)
+	line(700 - 25, 0, 700 - 25, 700)
+
 	//create hive
 	strokeWeight(3);
 	stroke(51)
@@ -91,7 +102,7 @@ function draw() {
 		for(let boid of flock){
 			boid.randOrFollow = whoFollow;
 			boid.flock(flock, path, path.pointPath, path.neighbors);
-			boid.ifAtEdge();
+			//boid.ifAtEdge();
 			boid.update();
 			if(typeFlock == 'Bee')
 				boid.show('Bee');
@@ -133,7 +144,7 @@ function clearAll(){
 function mouseReleased(){
 	if(mouseX > 699 || mouseY > 699)
 		return
-	path.addPoint(mouseX, mouseY, false);
+	path.addPoint(mouseX, mouseY);
 	console.log(path.pointPath.length);
 }
 
@@ -142,7 +153,7 @@ function goBees(){
 	if(path.pointPath.length > 0){
 		console.log(path.length)
 		//Hive point (60, 80)
-		path.addPoint(60, 80, true);
+		path.addPoint(60, 80);
 		whoFollow = 'pathInOrder';
 	}
 

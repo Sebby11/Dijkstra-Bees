@@ -4,13 +4,11 @@ TODO:
 -implement dijkstras
 
 */
-
-var cnt = 0;
 class Boid {
 	constructor() {
 		//vectors rooted @ (0, 0)
 		this.position = createVector(60, 80);
-		this.velocity = p5.Vector.random2D();
+		this.velocity = createVector(random(0, 5), random(0, 5));//p5.Vector.random2D();
 		//speed at which boids move
 		this.velocity.setMag(random(2, 4));
 		this.acceleration = createVector();
@@ -20,21 +18,35 @@ class Boid {
 		this.maxSpeed = 4;
 		//false - rand  / true - follow mouse
 		this.randOrFollow = 'random';
+
+		//Side detection
+		this.hitTop = this.hitBot = this.hitRight = this.hitLeft = false;
+
+		//For random movement in update()
+		this.moveTick = 0;
+
+		//Controls when near flowers in flock()
+		this.cnt = 0;
 	}
 
+	// If the bee gets close to an edge, then he moves opposite to that edge
 	ifAtEdge(){
-		if(this.position.x > width){
-			this.position.x = 0;
+		if(this.position.x > width - 25){
+			this.hitRight = true;
+			this.hitTop = this.hitBot = this.hitLeft = false
 		}
-		else if(this.position.x < 0){
-			this.position.x = width;
+		else if(this.position.x < 25){
+			this.hitLeft = true;
+			this.hitTop = this.hitBot = this.hitRight = false
 		}
 
-		if(this.position.y > height){
-			this.position.y = 0;
+		if(this.position.y > height - 25){
+			this.hitBot = true;
+			this.hitTop = this.hitRight = this.hitLeft = false
 		}
-		else if(this.position.y < 0){
-			this.position.y = width;
+		else if(this.position.y < 25){
+			this.hitTop = true;
+			this.hitBot = this.hitRight = this.hitLeft = false
 		}
 	}
 
@@ -82,6 +94,26 @@ class Boid {
 		this.velocity.add(this.acceleration);
 		this.velocity.limit(this.maxSpeed);
 		this.acceleration.mult(0);
+		this.moveTick += 1;
+		this.ifAtEdge();
+		if(this.moveTick == 30){
+			if(this.hitRight){
+				this.velocity = createVector(random(-1, 0), random(-.5, 1));
+			}
+			else if(this.hitLeft){
+				this.velocity = createVector(random(0, 1), random(-.5, 1));
+			}
+			else if(this.hitBot){
+				this.velocity = createVector(random(-.5, 1), random(-1, 0));
+			}
+			else if(this.hitTop){
+				this.velocity = createVector(random(-.5, 1), random(0, 1));
+			}
+			else{
+				this.velocity = createVector(random(-.5, 1), random(-.5, 0));
+			}
+			this.moveTick = 0;
+		}
 	}
 
 	avg(fellowBoids, vectorType){
@@ -139,24 +171,35 @@ class Boid {
 			this.acceleration.add(separation);
 			this.acceleration.add(alignment);
 			this.acceleration.add(cohesion);
+
+			//if close enough to the object report back
+			var falseObjs = [[width/2, height/2], [300, 50]];
+			for(let x of falseObjs){
+				var distToObj = abs(this.position.x - x[0]) + abs(this.position.y - x[1]);
+				if(distToObj <= 100){
+					console.log("WITHIN RANGE!: ", x);
+					//alert();
+					break;
+				}
+			}
 		}
 		else if(this.randOrFollow == 'pathInOrderOld'){
 			//TODO: If within ~15 of the flower then move onto the next
 
 			//follow points (start w/ first in list of pointPath)
 			let pointLocation = path.pointPath
-			let tmpPoint = createVector(pointLocation[cnt][0], pointLocation[cnt][1])
+			let tmpPoint = createVector(pointLocation[this.cnt][0], pointLocation[this.cnt][1])
 			let distance = dist(
 							this.position.x,
 							this.position.y,
-							pointLocation[cnt][0],
-							pointLocation[cnt][1])
+							pointLocation[this.cnt][0],
+							pointLocation[this.cnt][1])
 
 			//if it's close enough to the flower
 			if(distance <= 10){
-				cnt++;
-				if(cnt > pointLocation.length - 1)
-					cnt = 0;
+				this.cnt++;
+				if(this.cnt > pointLocation.length - 1)
+					this.cnt = 0;
 			}
 
 			let direction = p5.Vector.sub(tmpPoint, this.position);
