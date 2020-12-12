@@ -101,13 +101,29 @@ function draw() {
 		//Boids
 		for(let boid of flock){
 			boid.randOrFollow = whoFollow;
-			boid.flock(flock, path, path.pointPath, path.neighbors);
+			boid.flock(flock, path);//, path.pointPath, path.neighbors);
 			//boid.ifAtEdge();
 			boid.update();
 			if(typeFlock == 'Bee')
 				boid.show('Bee');
 			else
 				boid.show('Tri');
+
+			//Once it's back at the hive stop showing
+			let distBackToHive = dist(
+								boid.position.x,
+								boid.position.y,
+								60,
+								80);
+			//console.log(distBackToHive);
+
+			if(path.hiveNeighbors.length == 2){
+				whoFollow = 'BackToHive';
+				if(distBackToHive < 10){
+					//here is where we make the bee disappear once it reaches the hive
+					clearBee();
+				}
+			}
 
 		}
 	}
@@ -125,7 +141,7 @@ function followPath(){
 	if(path.pointPath.length == 0)
 		return
 	console.log('here')
-	whoFollow = 'pathInOrder';
+	whoFollow = 'pathInOrderOld';
 }
 
 function clearAll(){
@@ -141,6 +157,14 @@ function clearAll(){
 	beesLoose = false;
 }
 
+function clearBee(){
+	//clear boid
+	flock = []
+	for(let i = 0; i < 1; i++)
+		flock.push(new Boid());
+	beesLoose = false;
+}
+
 function mouseReleased(){
 	if(mouseX > 699 || mouseY > 699)
 		return
@@ -152,9 +176,9 @@ function goBees(){
 	//Check if there is a path at all. If not - do random // If so - do path
 	if(path.pointPath.length > 0){
 		console.log(path.length)
-		//Hive point (60, 80)
-		path.addPoint(60, 80);
-		whoFollow = 'pathInOrder';
+		
+		//**uncomment this when you've figured out the bee finding 2 flowers
+		//whoFollow = 'pathInOrder';
 	}
 
 	beesLoose = true;

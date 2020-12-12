@@ -18,6 +18,10 @@ class Path{
 			# - distance from current node to its neighbor
 		*/
 		this.neighbors = [];
+
+
+		//Hive neighbors
+		this.hiveNeighbors = [];
 	}
 
 	show(){

@@ -89,6 +89,7 @@ class Boid {
 
 	}
 
+	//Fix this to stop bee moving like a stutter
 	update() {
 		this.position.add(this.velocity);
 		this.velocity.add(this.acceleration);
@@ -161,7 +162,7 @@ class Boid {
 		return avgVel;
 	}
 
-	flock(fellowBoids, path, pointPath, neighbors){
+	flock(fellowBoids, path){
 		if(this.randOrFollow == 'random'){
 			this.acceleration.mult(0);
 			let alignment = this.avg(fellowBoids, 'alignment');
@@ -174,14 +175,45 @@ class Boid {
 
 			//if close enough to the object report back
 			var falseObjs = [[width/2, height/2], [300, 50]];
-			for(let x of falseObjs){
+			//console.log("HERE: ");
+			//console.log(path.pointPath)
+			//alert();
+			for(let x of path.pointPath){
 				var distToObj = abs(this.position.x - x[0]) + abs(this.position.y - x[1]);
-				if(distToObj <= 100){
+				if(distToObj <= 100 && path.hiveNeighbors.indexOf(x) == -1){
 					console.log("WITHIN RANGE!: ", x);
-					//alert();
+					path.hiveNeighbors.push(x);
 					break;
 				}
 			}
+
+			//When bee has found two flowers, go back to hive & let out workers
+			if(path.hiveNeighbors.length == 2){
+				this.randOrFollow = 'BackToHive';
+				//console.log("bth");
+				//console.log(this.randOrFollow);
+				//alert();
+			}
+		}
+		//Bee moves back towards the hive until it've close enough & movement switches to 'pathInOrder'
+		else if(this.randOrFollow == 'BackToHive'){
+				//alert();
+				let hiveVector = createVector(60, 80);
+				let distanceToHive = dist(
+										this.position.x,
+										this.position.y,
+										hiveVector.x,
+										hiveVector.y);
+				let directionToHive = p5.Vector.sub(hiveVector, this.position);
+				directionToHive.normalize();
+				directionToHive.mult(0.5);
+				this.acceleration = directionToHive;
+
+				let alignment = this.avg(fellowBoids, 'alignment');
+				let separation = this.avg(fellowBoids, 'separation');
+				//Since mass =1 then A = F/1
+				this.acceleration.add(separation);
+				this.acceleration.add(alignment);
 		}
 		else if(this.randOrFollow == 'pathInOrderOld'){
 			//TODO: If within ~15 of the flower then move onto the next
@@ -216,7 +248,7 @@ class Boid {
 		}
 		//Default to this when press 'Go Bees'
 		else if(this.randOrFollow == 'pathInOrder'){
-			
+			console.log("hhhh")
 			//var path = dijkstras(pointPath, neighbors, fellowBoids);
 		}
 
