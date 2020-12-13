@@ -10,6 +10,7 @@ slideVal = 25;
 whoFollow = 'random';
 beesLoose = false;
 path = [];
+beeReceived = false;
 
 function setup() {
 	// put setup code here
@@ -40,22 +41,12 @@ function setup() {
 
 	//Create Path
 	path = new Path(path);
-
-	//Testing javscript object notation
-	var flow2 = "f2";
-	dictTest = {
-		"f1":[flow2, "f3"],
-		flow2:["f1", "f3"],
-		"f3":["f1", "f2"]
-	}
-
-	console.log(dictTest.f1[0])
 }
 
 function draw() {
 	// put drawing code here
 	if(slider.value() != slideVal){
-		console.log(slider.value())
+		//console.log(slider.value())
 		//if less
 		if(slider.value() < slideVal){
 			for(let i = 0; i < slideVal - slider.value(); i++)
@@ -74,12 +65,10 @@ function draw() {
 	strokeWeight(3);
 	stroke(51);
 	fill(255, 0, 0);
-	ellipse(width/2, height/2, 20, 20);
-	ellipse(300, 50, 20, 20);
-	line(25, 0, 25, 700);
-	line(0, 25, 700, 25);
-	line(0, 700 - 25, 700, 700 - 25)
-	line(700 - 25, 0, 700 - 25, 700)
+	line(50, 0, 50, 700);
+	line(0, 50, 700, 50);
+	line(0, 700 - 50, 700, 700 - 50)
+	line(700 - 50, 0, 700 - 50, 700)
 
 	//create hive
 	strokeWeight(3);
@@ -117,7 +106,7 @@ function draw() {
 								80);
 			//console.log(distBackToHive);
 
-			if(path.hiveNeighbors.length == 2){
+			if(path.hiveNeighbors.length == path.pointPath.length && !beeReceived){
 				whoFollow = 'BackToHive';
 				if(distBackToHive < 10){
 					//here is where we make the bee disappear once it reaches the hive
@@ -140,13 +129,14 @@ function changeBee(){
 function followPath(){
 	if(path.pointPath.length == 0)
 		return
-	console.log('here')
+	//console.log('here')
 	whoFollow = 'pathInOrderOld';
 }
 
 function clearAll(){
 	//clear flowers
 	path.pointPath = [];
+	path.hiveNeighbors = [];
 
 	//clear boid
 	flock = []
@@ -163,22 +153,23 @@ function clearBee(){
 	for(let i = 0; i < 1; i++)
 		flock.push(new Boid());
 	beesLoose = false;
+	beeReceived = true;
+	console.log("Path: ", path.pointPath, "\n Neighbors: ", path.neighbors, "\n Hive Neighbors: ", path.hiveNeighbors);
+	whoFollow = 'pathInOrderOld';
 }
 
 function mouseReleased(){
 	if(mouseX > 699 || mouseY > 699)
 		return
 	path.addPoint(mouseX, mouseY);
-	console.log(path.pointPath.length);
 }
 
 function goBees(){
 	//Check if there is a path at all. If not - do random // If so - do path
 	if(path.pointPath.length > 0){
-		console.log(path.length)
 		
 		//**uncomment this when you've figured out the bee finding 2 flowers
-		//whoFollow = 'pathInOrder';
+		//whoFollow = 'random';
 	}
 
 	beesLoose = true;

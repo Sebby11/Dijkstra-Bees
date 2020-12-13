@@ -31,22 +31,26 @@ class Boid {
 
 	// If the bee gets close to an edge, then he moves opposite to that edge
 	ifAtEdge(){
-		if(this.position.x > width - 25){
+		if(this.position.x > width - 50){
 			this.hitRight = true;
 			this.hitTop = this.hitBot = this.hitLeft = false
+			console.log("HIT RIGHT")
 		}
-		else if(this.position.x < 25){
+		else if(this.position.x < 50){
 			this.hitLeft = true;
 			this.hitTop = this.hitBot = this.hitRight = false
+			console.log("HIT LEFT")
 		}
 
-		if(this.position.y > height - 25){
+		else if(this.position.y > height - 50){
 			this.hitBot = true;
 			this.hitTop = this.hitRight = this.hitLeft = false
+			console.log("HIT BOT")
 		}
-		else if(this.position.y < 25){
+		else if(this.position.y < 50){
 			this.hitTop = true;
 			this.hitBot = this.hitRight = this.hitLeft = false
+			console.log("HIT TOP")
 		}
 	}
 
@@ -91,29 +95,32 @@ class Boid {
 
 	//Fix this to stop bee moving like a stutter
 	update() {
+		this.ifAtEdge();
 		this.position.add(this.velocity);
 		this.velocity.add(this.acceleration);
 		this.velocity.limit(this.maxSpeed);
 		this.acceleration.mult(0);
-		this.moveTick += 1;
-		this.ifAtEdge();
-		if(this.moveTick == 30){
-			if(this.hitRight){
-				this.velocity = createVector(random(-1, 0), random(-.5, 1));
+		if(this.randOrFollow == 'random'){
+			this.moveTick += 1;
+			if(this.moveTick == 20){
+				if(this.hitRight){
+					this.velocity = createVector(random(-3, 0), random(-3, 3));
+				}
+				else if(this.hitLeft){
+					console.log("HIT LEFT INNIT")
+					this.velocity = createVector(random(0, 3), random(-3, 3));
+				}
+				else if(this.hitBot){
+					this.velocity = createVector(random(-3, 3), random(-3, 0));
+				}
+				else if(this.hitTop){
+					this.velocity = createVector(random(-3, 3), random(0, 3));
+				}
+				else{
+					this.velocity = createVector(random(-3, 3), random(-3, 0));
+				}
+				this.moveTick = 0;
 			}
-			else if(this.hitLeft){
-				this.velocity = createVector(random(0, 1), random(-.5, 1));
-			}
-			else if(this.hitBot){
-				this.velocity = createVector(random(-.5, 1), random(-1, 0));
-			}
-			else if(this.hitTop){
-				this.velocity = createVector(random(-.5, 1), random(0, 1));
-			}
-			else{
-				this.velocity = createVector(random(-.5, 1), random(-.5, 0));
-			}
-			this.moveTick = 0;
 		}
 	}
 
@@ -180,8 +187,10 @@ class Boid {
 			//alert();
 			for(let x of path.pointPath){
 				var distToObj = abs(this.position.x - x[0]) + abs(this.position.y - x[1]);
-				if(distToObj <= 100 && path.hiveNeighbors.indexOf(x) == -1){
+				if(distToObj <= 150 && path.hiveNeighbors.indexOf(x) == -1){
 					console.log("WITHIN RANGE!: ", x);
+					//alert();
+					//TODO: **PUSH [[x, y], distanceToHive] TO THE NEIGHBORS OF THE HIVE**
 					path.hiveNeighbors.push(x);
 					break;
 				}
@@ -190,9 +199,6 @@ class Boid {
 			//When bee has found two flowers, go back to hive & let out workers
 			if(path.hiveNeighbors.length == 2){
 				this.randOrFollow = 'BackToHive';
-				//console.log("bth");
-				//console.log(this.randOrFollow);
-				//alert();
 			}
 		}
 		//Bee moves back towards the hive until it've close enough & movement switches to 'pathInOrder'
@@ -219,7 +225,7 @@ class Boid {
 			//TODO: If within ~15 of the flower then move onto the next
 
 			//follow points (start w/ first in list of pointPath)
-			let pointLocation = path.pointPath
+			let pointLocation = path.hiveNeighbors;
 			let tmpPoint = createVector(pointLocation[this.cnt][0], pointLocation[this.cnt][1])
 			let distance = dist(
 							this.position.x,
@@ -248,13 +254,16 @@ class Boid {
 		}
 		//Default to this when press 'Go Bees'
 		else if(this.randOrFollow == 'pathInOrder'){
-			console.log("hhhh")
-			//var path = dijkstras(pointPath, neighbors, fellowBoids);
+			console.log("In pathInOrder");
+			var dijkstraPath = dijkstras(path, fellowBoids);
 		}
 
 	}
 
-	dijkstras(){
-		
+	//Finds the shortest path from one of the starting flowers found to the furthest flower from it?
+	dijkstras(path, fellowBoids){
+		var expandability = new priQ();
+		expandability.push(0, [60, 80]);
+		//var came_from
 	}
 }

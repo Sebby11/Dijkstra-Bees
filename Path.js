@@ -29,10 +29,15 @@ class Path{
 		for(let marker of this.pointPath){
 			strokeWeight(10)
   			stroke(255, 255, 0, 255)
-			fill(255, 255, 0, 255);
+  			if(this.hiveNeighbors.indexOf(marker) == -1){
+				fill(128, 128, 128);
+  			}
+			else{
+				fill(0, 0, 255);
+			}
 			point(marker[0], marker[1]);
 			strokeWeight(0);
-			fill(128,0,128)
+			
 			ellipse(marker[0], marker[1]+15,10, 20);
 			ellipse(marker[0], marker[1]-15,10, 20);
 			ellipse(marker[0]+15, marker[1],20, 10);
@@ -47,7 +52,7 @@ class Path{
 	addPoint(x, y){
 		//add to path
 		this.pointPath.push([x, y]);
-		console.log("Neibor: ", this.neighbors)
+		//console.log("Neibor: ", this.neighbors)
 
 		//add to neighbors
 		this.neighbors.push([]);
