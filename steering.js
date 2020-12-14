@@ -104,20 +104,20 @@ class Boid {
 			this.moveTick += 1;
 			if(this.moveTick == 20){
 				if(this.hitRight){
-					this.velocity = createVector(random(-3, 0), random(-3, 3));
+					this.velocity = createVector(random(-2, 0), random(-2, 2));
 				}
 				else if(this.hitLeft){
 					console.log("HIT LEFT INNIT")
-					this.velocity = createVector(random(0, 3), random(-3, 3));
+					this.velocity = createVector(random(0, 2), random(-2, 2));
 				}
 				else if(this.hitBot){
-					this.velocity = createVector(random(-3, 3), random(-3, 0));
+					this.velocity = createVector(random(-2, 2), random(-2, 0));
 				}
 				else if(this.hitTop){
-					this.velocity = createVector(random(-3, 3), random(0, 3));
+					this.velocity = createVector(random(-2, 2), random(0, 2));
 				}
 				else{
-					this.velocity = createVector(random(-3, 3), random(-3, 0));
+					this.velocity = createVector(random(-2, 2), random(-2, 0));
 				}
 				this.moveTick = 0;
 			}
@@ -196,8 +196,9 @@ class Boid {
 				}
 			}
 
-			//When bee has found two flowers, go back to hive & let out workers
-			if(path.hiveNeighbors.length == 2){
+			//When bee has found all flowers, go back to hive & let out workers
+			if(path.hiveNeighbors.length == path.pointPath.length){
+				console.log("this");
 				this.randOrFollow = 'BackToHive';
 			}
 		}
